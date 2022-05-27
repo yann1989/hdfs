@@ -22,5 +22,6 @@
 - **ListStatus**: 当前路径下的所有文件(所有类型的文件)
 - **GetFileStatus**: 获取指定文件状态
 - **Walk**: 遍历指定路径下的所有文件(所有类型的文件)
+- **FileStatus.IsDir** 判断是否为目录
 
 
