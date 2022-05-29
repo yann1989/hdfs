@@ -15,18 +15,13 @@ import (
 )
 
 const (
-	MkdirPath         = "%s/webhdfs/v1%s?op=MKDIRS&permission=%s&user.name=%s"
-	GetContentSummary = "%s/webhdfs/v1%s?op=GETCONTENTSUMMARY&user.name=%s"
+	MkdirPathFormat         = "%s/webhdfs/v1%s?op=MKDIRS&permission=%s&user.name=%s"
+	GetContentSummaryFormat = "%s/webhdfs/v1%s?op=GETCONTENTSUMMARY&user.name=%s"
 )
 
 // Mkdir 创建目录并设置目录权限
 func (c *Client) Mkdir(dirname string, perm os.FileMode) error {
-	node, err := c.getDataNode()
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf(MkdirPath, node, dirname, strconv.FormatInt(int64(perm), 8), c.user), nil)
+	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf(MkdirPathFormat, c.addr, dirname, strconv.FormatInt(int64(perm), 8), c.user), nil)
 	if err != nil {
 		return err
 	}
@@ -57,11 +52,7 @@ type ContentSummary struct {
 
 // GetContentSummary 获取目录的内容摘要
 func (c *Client) GetContentSummary(dirname string) (*ContentSummary, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetContentSummary, node, dirname, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetContentSummaryFormat, c.addr, dirname, c.user), nil)
 	if err != nil {
 		return nil, err
 	}

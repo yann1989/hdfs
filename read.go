@@ -11,19 +11,14 @@ import (
 )
 
 const (
-	ReadFile          = "%s/webhdfs/v1%s?op=OPEN&length=%d&offset=%d&buffersize=%d&user.name=%s"
-	DefaultReadFile   = "%s/webhdfs/v1%s?op=OPEN&user.name=%s"
-	DefaultReadLength = 4096
+	ReadFileFormat        = "%s/webhdfs/v1%s?op=OPEN&length=%d&offset=%d&buffersize=%d&user.name=%s"
+	DefaultReadFileFormat = "%s/webhdfs/v1%s?op=OPEN&user.name=%s"
+	DefaultReadLength     = 4096
 )
 
 // ReadFile 读取指定文件
 func (c *Client) Read(path string) ([]byte, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(DefaultReadFile, node, path, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(DefaultReadFileFormat, c.addr, path, c.user), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +35,6 @@ func (c *Client) Read(path string) ([]byte, error) {
 
 // ReadFile 读取指定文件
 func (c *Client) ReadFile(path string, offset, length uint64, bufferSize uint) ([]byte, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
 	if offset < 0 {
 		offset = 0
 	}
@@ -54,7 +45,7 @@ func (c *Client) ReadFile(path string, offset, length uint64, bufferSize uint) (
 		length = DefaultReadLength
 	}
 
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(ReadFile, node, path, length, offset, bufferSize, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(ReadFileFormat, c.addr, path, length, offset, bufferSize, c.user), nil)
 	if err != nil {
 		return nil, err
 	}

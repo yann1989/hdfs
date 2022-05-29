@@ -5,18 +5,16 @@
 package hdfs
 
 import (
+	"crypto/tls"
 	"fmt"
-	"math/rand"
 	"net"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 )
 
 var (
-	ErrNotFoundDataNode = fmt.Errorf("没有找到可用的节点信息")
-	DefaultTransport    = &http.Transport{
+	DefaultTransport = &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
 			Timeout:   3 * time.Second,
@@ -27,68 +25,64 @@ var (
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
 	}
 )
 
 const (
 	DefaultUser        = "root" //默认用户
 	DefaultReplication = 1      //默认复制数量
+	DefaultProtocol    = "http"
+	DefaultHost        = "127.0.0.1:14000"
+	DefaultPort        = 14000
 )
 
 type Client struct {
 	*http.Client
-	dataNodes []string
-	sync.RWMutex
+	addr        string
+	host        string
+	port        int
+	protocol    string
 	user        string
 	replication int
 }
 
-type ClientOption struct {
-	DataNodes   []string
-	User        string
-	Replication int
-	Timeout     time.Duration
-	Transport   *http.Transport
-}
-
-func New(opt *ClientOption) *Client {
-	if len(opt.DataNodes) == 0 {
-		panic(ErrBadOptionsDataNodeCannotNull)
-	}
-	for i := 0; i < len(opt.DataNodes); i++ {
-		if !strings.HasPrefix(opt.DataNodes[i], "http") {
-			opt.DataNodes[i] = fmt.Sprintf("http://%s", opt.DataNodes[i])
-		}
-	}
-	if opt.Replication == 0 {
-		opt.Replication = DefaultReplication
+func New(opts ...Option) *Client {
+	var client = new(Client)
+	client.Client = new(http.Client)
+	for _, opt := range opts {
+		opt(client)
 	}
 
-	if len(opt.User) == 0 {
-		opt.User = DefaultUser
+	if len(client.host) == 0 {
+		client.host = DefaultHost
 	}
 
-	if opt.Transport == nil {
-		opt.Transport = DefaultTransport
+	if client.port == 0 {
+		client.port = DefaultPort
 	}
 
-	return &Client{
-		Client: &http.Client{
-			Transport: opt.Transport,
-			Timeout:   opt.Timeout,
-		},
-		dataNodes:   opt.DataNodes,
-		user:        opt.User,
-		replication: DefaultReplication,
+	if len(client.protocol) == 0 {
+		client.protocol = DefaultProtocol
 	}
-}
 
-func (c *Client) getDataNode() (string, error) {
-	c.RLock()
-	defer c.RUnlock()
-	length := len(c.dataNodes)
-	if length == 0 {
-		return "", ErrNotFoundDataNode
+	if len(client.user) == 0 {
+		client.user = DefaultUser
 	}
-	return c.dataNodes[rand.New(rand.NewSource(time.Now().Unix())).Intn(length)], nil
+
+	if client.replication == 0 {
+		client.replication = DefaultReplication
+	}
+
+	if !strings.HasPrefix(client.host, DefaultProtocol) {
+		client.addr = fmt.Sprintf("%s://%s:%d", client.protocol, client.host, client.port)
+	}
+
+	if client.Transport == nil {
+		client.Transport = DefaultTransport
+	}
+
+	return client
 }

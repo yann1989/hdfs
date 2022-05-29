@@ -14,11 +14,11 @@ import (
 )
 
 const (
-	ListStatus      = "%s/webhdfs/v1%s?op=LISTSTATUS&user.name=%s"
-	GetFileStatus   = "%s/webhdfs/v1%s?op=GETFILESTATUS&user.name=%s"
-	GetFileChecksum = "%s/webhdfs/v1%s?op=GETFILECHECKSUM&user.name=%s"
-	TypeFile        = "FILE"
-	TypeDir         = "DIRECTORY"
+	ListStatusFormat      = "%s/webhdfs/v1%s?op=LISTSTATUS&user.name=%s"
+	GetFileStatusFormat   = "%s/webhdfs/v1%s?op=GETFILESTATUS&user.name=%s"
+	GetFileChecksumFormat = "%s/webhdfs/v1%s?op=GETFILECHECKSUM&user.name=%s"
+	TypeFile              = "FILE"
+	TypeDir               = "DIRECTORY"
 )
 
 type FileStatus struct {
@@ -43,12 +43,7 @@ func (f FileStatus) IsDir() bool {
 
 // ListStatus 获取指定路径下列表
 func (c *Client) ListStatus(path string) ([]FileStatus, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(ListStatus, node, path, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(ListStatusFormat, c.addr, path, c.user), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +66,7 @@ func (c *Client) ListStatus(path string) ([]FileStatus, error) {
 
 // GetFileStatus 获取指定文件的信息
 func (c *Client) GetFileStatus(path string) (*FileStatus, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetFileStatus, node, path, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetFileStatusFormat, c.addr, path, c.user), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -132,12 +122,7 @@ type FileChecksum struct {
 
 // GetFileChecksum 获取指定文件的md5值
 func (c *Client) GetFileChecksum(path string) (*FileChecksum, error) {
-	node, err := c.getDataNode()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetFileChecksum, node, path, c.user), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf(GetFileChecksumFormat, c.addr, path, c.user), nil)
 	if err != nil {
 		return nil, err
 	}

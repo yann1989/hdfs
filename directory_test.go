@@ -11,12 +11,12 @@ import (
 )
 
 func TestClient_Mkdir(t *testing.T) {
-	err := cli.Mkdir("/test/test2", os.ModePerm)
+	err := cli.Mkdir("/test", os.ModePerm)
 	assert.Equal(t, err, nil, "创建目录失败")
 }
 
 func TestClient_GetContentSummary(t *testing.T) {
 	ret, err := cli.GetContentSummary("/test")
-	assert.Equal(t, err, nil, "创建目录失败")
+	assert.Equal(t, err, nil, "获取目录信息失败")
 	t.Log(ret)
 }
