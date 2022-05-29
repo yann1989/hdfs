@@ -10,7 +10,12 @@ import (
 )
 
 func TestClient_Create(t *testing.T) {
-	err := cli.Create("/test/2.txt", []byte("abcdefg"))
+	err := cli.Create("/2.txt", []byte("aaaaaaaaaaaaaa"))
+	assert.Equal(t, err, nil, "创建文件失败")
+}
+
+func TestClient_CreateFile(t *testing.T) {
+	err := cli.CreateFile("/1.txt", true, 0, 0, 0, 0, []byte("dsfsdfdsfdsfd"))
 	assert.Equal(t, err, nil, "创建文件失败")
 }
 

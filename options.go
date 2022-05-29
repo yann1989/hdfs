@@ -63,3 +63,10 @@ func TransportOption(transport *http.Transport) Option {
 		client.Transport = transport
 	}
 }
+
+//MinBlockSizeOption 设置最小块大小 单位字节
+func MinBlockSizeOption(blockSize uint64) Option {
+	return func(client *Client) {
+		client.blockSize = blockSize
+	}
+}

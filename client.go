@@ -37,6 +37,7 @@ const (
 	DefaultProtocol    = "http"
 	DefaultHost        = "127.0.0.1:14000"
 	DefaultPort        = 14000
+	DefaultBlockSize   = 1024 * 1024 * 128 //默认块大小
 )
 
 type Client struct {
@@ -47,6 +48,7 @@ type Client struct {
 	protocol    string
 	user        string
 	replication int
+	blockSize   uint64
 }
 
 func New(opts ...Option) *Client {
@@ -74,6 +76,10 @@ func New(opts ...Option) *Client {
 
 	if client.replication == 0 {
 		client.replication = DefaultReplication
+	}
+
+	if client.blockSize == 0 {
+		client.blockSize = DefaultBlockSize
 	}
 
 	if !strings.HasPrefix(client.host, DefaultProtocol) {
