@@ -16,7 +16,7 @@ func TestClient_Mkdir(t *testing.T) {
 }
 
 func TestClient_GetContentSummary(t *testing.T) {
-	ret, err := cli.GetContentSummary("/test")
+	ret, err := cli.GetContentSummary("/")
 	assert.Equal(t, err, nil, "获取目录信息失败")
 	t.Log(ret)
 }

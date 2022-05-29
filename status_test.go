@@ -14,6 +14,7 @@ func TestClient_ListStatus(t *testing.T) {
 	data, err := cli.ListStatus("/")
 	assert.Equal(t, err, nil)
 	t.Logf("状态列表: %v", data)
+	t.Logf("状态列表长度: %v", len(data))
 }
 
 func TestClient_GetFileStatus(t *testing.T) {
