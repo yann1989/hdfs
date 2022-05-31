@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	ErrBadOptionsDataNodeCannotNull = fmt.Errorf("非法参数, DataNodes为空")
-	ErrPathIsNotDirectory           = fmt.Errorf("传入路径不是目录")
+	ErrPathIsNotDirectory = fmt.Errorf("传入路径不是目录")
 )
 
 func GetErrFromBody(response *http.Response) error {
