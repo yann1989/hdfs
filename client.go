@@ -5,31 +5,28 @@
 package hdfs
 
 import (
-	"crypto/tls"
 	"fmt"
-	"net"
 	"net/http"
 	"strings"
-	"time"
 )
 
-var (
-	DefaultTransport = &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   3 * time.Second,
-			KeepAlive: 30 * time.Second,
-		}).DialContext,
-		ForceAttemptHTTP2:     true,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	}
-)
+//var (
+//	DefaultTransport = &http.Transport{
+//		Proxy: http.ProxyFromEnvironment,
+//		DialContext: (&net.Dialer{
+//			Timeout:   3 * time.Second,
+//			KeepAlive: 30 * time.Second,
+//		}).DialContext,
+//		ForceAttemptHTTP2:     true,
+//		MaxIdleConns:          100,
+//		IdleConnTimeout:       90 * time.Second,
+//		TLSHandshakeTimeout:   10 * time.Second,
+//		ExpectContinueTimeout: 1 * time.Second,
+//		TLSClientConfig: &tls.Config{
+//			InsecureSkipVerify: true,
+//		},
+//	}
+//)
 
 const (
 	DefaultUser        = "root" //默认用户
@@ -53,7 +50,7 @@ type Client struct {
 
 func New(opts ...Option) *Client {
 	var client = new(Client)
-	client.Client = new(http.Client)
+	client.Client = http.DefaultClient
 	for _, opt := range opts {
 		opt(client)
 	}
@@ -86,9 +83,9 @@ func New(opts ...Option) *Client {
 		client.addr = fmt.Sprintf("%s://%s:%d", client.protocol, client.host, client.port)
 	}
 
-	if client.Transport == nil {
-		client.Transport = DefaultTransport
-	}
+	//if client.Transport == nil {
+	//	client.Transport = DefaultTransport
+	//}
 
 	return client
 }
