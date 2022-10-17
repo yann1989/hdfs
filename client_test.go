@@ -7,5 +7,5 @@ package hdfs
 var cli *Client
 
 func init() {
-	cli = New(HostOption("10.1.141.215"), PortOption(DefaultPort))
+	cli = New(HostOption("192.168.10.13"), MinBlockSizeOption(DefaultBlockSize/128), PortOption(DefaultPort), UserOption("hdfs"))
 }
