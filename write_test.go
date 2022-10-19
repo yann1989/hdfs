@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"path/filepath"
-	"sync"
 	"testing"
+	"time"
 )
 
 func TestClient_Create(t *testing.T) {
@@ -28,13 +28,11 @@ func TestClient_Append(t *testing.T) {
 }
 
 func TestClient_CreateFileWithGoodBlock(t *testing.T) {
-	var wg sync.WaitGroup
-
+	//var wg sync.WaitGroup
+	//
 	list, _ := ioutil.ReadDir("/Users/yann/Desktop/test")
 	for i := 0; i < len(list); i++ {
-		wg.Add(1)
 		go func(i int) {
-			defer wg.Done()
 			all, _ := ioutil.ReadFile(filepath.Join("/Users/yann/Desktop/test", list[i].Name()))
 			err := cli.CreateFileWithGoodBlock(filepath.Join("/xxx/133", list[i].Name()), all)
 			if err != nil {
@@ -42,12 +40,13 @@ func TestClient_CreateFileWithGoodBlock(t *testing.T) {
 			}
 		}(i)
 	}
+	go func() {
+		all, _ := ioutil.ReadFile("/Users/yann/Desktop/aaa.sql")
+		err := cli.CreateFileWithGoodBlock("/syn_data/lf/lfrd/text_data/bbb.sql", all)
+		if err != nil {
+			panic(err)
+		}
+	}()
 
-	wg.Wait()
-
-	all, _ := ioutil.ReadFile("/Users/yann/Desktop/test/影音-全量数据贯通说明-202209232的副本9.docx")
-	err := cli.CreateFileWithGoodBlock("/ddd/影音-全量数据贯通说明-202209232的副本9", all)
-	if err != nil {
-		panic(err)
-	}
+	time.Sleep(time.Hour)
 }
